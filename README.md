@@ -118,7 +118,11 @@ Open the URL it prints (usually `http://localhost:5173`). Sign in as admin
 (top right) to see the upload panel and bulk-delete controls. Everyone else
 just sees the player and can play/download tracks.
 
-## 7. Deploy to Netlify
+## 7. Deploy (Netlify or Vercel)
+
+This repo includes config for both `netlify.toml` and `vercel.json`, so you can use whichever host you like.
+
+### Netlify
 
 1. Push this project to a GitHub (or GitLab/Bitbucket) repo.
 2. In Netlify, click **Add new site → Import an existing project**, and pick that repo.
@@ -135,6 +139,22 @@ just sees the player and can play/download tracks.
 7. Whenever you change an environment variable in Netlify, trigger a new
    deploy (**Deploys → Trigger deploy**) — Vite bakes env vars in at build
    time, so the running site won't pick up changes until it rebuilds.
+
+### Vercel
+
+1. Push the project to GitHub (skip if you already did this for Netlify).
+2. In Vercel, click **Add New → Project**, and import that repo. Vercel
+   auto-detects Vite, so the build command (`vite build`) and output
+   directory (`dist`) should already be right.
+3. Before deploying, expand **Environment Variables** and add
+   `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (and the AdSense ones
+   once you have them).
+4. Click **Deploy**. You'll get a URL like `your-project.vercel.app`.
+5. Add that URL to Supabase's **Authentication → URL Configuration** the
+   same way described for Netlify above.
+6. Changed an env var afterward? Go to **Deployments**, open the latest one,
+   and hit **Redeploy** — same reasoning as Netlify, the vars are baked in
+   at build time.
 
 ## 8. Add Google AdSense
 

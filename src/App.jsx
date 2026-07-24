@@ -7,6 +7,7 @@ import TrackList from './components/TrackList'
 import UploadPanel from './components/UploadPanel'
 import AdminLogin from './components/AdminLogin'
 import AdSpace from './components/AdSpace'
+import AdUnit from './components/AdUnit'
 
 export default function App() {
   const { isAdmin, signIn, signOut } = useAuth()
@@ -124,6 +125,13 @@ export default function App() {
               onDeleteSelected={handleDeleteSelected}
             />
           )}
+
+          <div className="mt-6">
+            <AdUnit
+              slot={import.meta.env.VITE_ADSENSE_SLOT_BOTTOM}
+              className="w-full min-h-[100px]"
+            />
+          </div>
         </main>
 
         <AdSpace side="right" />
