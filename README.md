@@ -118,6 +118,51 @@ Open the URL it prints (usually `http://localhost:5173`). Sign in as admin
 (top right) to see the upload panel and bulk-delete controls. Everyone else
 just sees the player and can play/download tracks.
 
+## 7. Deploy to Netlify
+
+1. Push this project to a GitHub (or GitLab/Bitbucket) repo.
+2. In Netlify, click **Add new site → Import an existing project**, and pick that repo.
+3. Netlify should auto-detect the build settings from `netlify.toml`
+   (`npm run build`, publish directory `dist`). If it doesn't, set those manually.
+4. Before the first deploy, go to **Site configuration → Environment variables** and add:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - (and the `VITE_ADSENSE_*` ones below, once you have them)
+5. Deploy. Netlify gives you a URL like `your-site-name.netlify.app`.
+6. In Supabase, go to **Authentication → URL Configuration** and add your
+   Netlify URL to the allowed **Site URL** / **Redirect URLs** so admin
+   sign-in works in production too.
+7. Whenever you change an environment variable in Netlify, trigger a new
+   deploy (**Deploys → Trigger deploy**) — Vite bakes env vars in at build
+   time, so the running site won't pick up changes until it rebuilds.
+
+## 8. Add Google AdSense
+
+The ad spaces (both side columns and the strip below the track list) already
+show a dashed "Ad space" placeholder and will switch to real ads the moment
+you fill in three environment variables — no code changes needed.
+
+1. Apply for [Google AdSense](https://adsense.google.com) using your live
+   Netlify URL. Approval isn't instant and Google needs to be able to crawl
+   the real site, so do this after step 7.
+2. Once approved, AdSense gives you a **publisher ID** that looks like
+   `ca-pub-1234567890123456`.
+3. Create ad units in AdSense for: the left column, the right column, and
+   the strip below the track list. Each gives you a numeric **slot ID**.
+4. In Netlify, add:
+   - `VITE_ADSENSE_CLIENT` = your `ca-pub-...` id
+   - `VITE_ADSENSE_SLOT_LEFT` = left column's slot id
+   - `VITE_ADSENSE_SLOT_RIGHT` = right column's slot id
+   - `VITE_ADSENSE_SLOT_BOTTOM` = below-the-list slot id
+5. Trigger a redeploy. Add the same values to your local `.env` if you want
+   to preview real ads while developing (they may show as blank/test ads on
+   localhost, which is normal — AdSense only serves real ads on approved
+   domains).
+
+The side ad columns only show on wide (`xl`) screens, matching the original
+layout; the strip below the list shows on every screen size, including
+phones, so there's still ad space on mobile.
+
 ## How it's organized
 
 - `src/App.jsx` — page layout and shared player state (current track, queue, play/pause)
@@ -126,7 +171,8 @@ just sees the player and can play/download tracks.
 - `src/components/TrackList.jsx` / `TrackCard.jsx` — grid/list views, admin bulk-select
 - `src/components/UploadPanel.jsx` — admin bulk upload (matches images to audio by filename)
 - `src/components/CDArt.jsx` — the spinning vinyl fallback for tracks with no cover image
-- `src/components/AdSpace.jsx` — placeholder ad columns (wide screens only for now)
+- `src/components/AdSpace.jsx` / `AdUnit.jsx` — side ad columns and the
+  reusable AdSense unit (falls back to a placeholder until configured)
 - `src/hooks/useTracks.js` — reads/writes the `tracks` table and storage buckets
 - `src/hooks/useAuth.js` — admin sign-in/out via Supabase Auth
 - `src/hooks/useDownloader.js` — enforces one download at a time
